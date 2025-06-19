@@ -46,7 +46,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("🔍 Напиши /search чтобы начать поиск.")
 
-app = Application.builder().token("AAGjDEiqkmh78wqeJrRJcG9T0_c6MwLfHQI").build()
+app = Application.builder().token("7959838571:AAFl1_RS9KUkSDWSIUhzjPFEXnalGGJR-u0").build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("search", search))

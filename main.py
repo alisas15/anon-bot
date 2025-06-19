@@ -58,7 +58,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         partner_id = active_chats[user_id]
         await context.bot.send_message(chat_id=partner_id, text=update.message.text)
     else:
-        await update.message.reply_text("🔍 напиши /search чтобы начать поиск.")
+        await update.message.reply_text("🔍 Напиши /search чтобы начать поиск.")
 
 # Создаём Telegram Application
 app_bot = Application.builder().token("7959838571:AAFl1_RS9KUkSDWSIUhzjPFEXnalGGJR-u0").build()

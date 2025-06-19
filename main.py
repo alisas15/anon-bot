@@ -4,25 +4,23 @@ from flask import Flask
 import threading
 import os
 
-# Flask-сервер для Render
-web_app = Flask("")
+app = Flask("")
 
-@web_app.route("/")
+@app.route("/")
 def home():
     return "Bot is running!"
 
 def run_web():
     port = int(os.environ.get("PORT", 5000))
-    web_app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)
 
-threading.Thread(target=run_web).start()  # запускаем Flask отдельно
+threading.Thread(target=run_web).start()
 
-# Telegram бот
 users_waiting = []
 active_chats = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Привет! Напиши /search чтобы найти подписчиков.")
+    await update.message.reply_text("Привет! Напиши /search чтобы найти собеседника.")
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.chat_id
@@ -33,18 +31,18 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
         partner_id = users_waiting.pop(0)
         active_chats[user_id] = partner_id
         active_chats[partner_id] = user_id
-        await context.bot.send_message(chat_id=user_id, text="✅ Подписчик найден!")
-        await context.bot.send_message(chat_id=partner_id, text="✅ Подписчик найден!")
+        await context.bot.send_message(chat_id=user_id, text="✅ Собеседник найден!")
+        await context.bot.send_message(chat_id=partner_id, text="✅ Собеседник найден!")
     else:
         users_waiting.append(user_id)
-        await update.message.reply_text("⏳ Ищем новых подписчиков...")
+        await update.message.reply_text("⏳ Ищем собеседника...")
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.chat_id
     if user_id in active_chats:
         partner_id = active_chats.pop(user_id)
         active_chats.pop(partner_id, None)
-        await context.bot.send_message(chat_id=partner_id, text="❗ Подписчик покинул чат.")
+        await context.bot.send_message(chat_id=partner_id, text="❗ Собеседник покинул чат.")
         await update.message.reply_text("🔚 Ты покинул чат.")
     elif user_id in users_waiting:
         users_waiting.remove(user_id)
@@ -60,17 +58,11 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("🔍 Напиши /search чтобы начать поиск.")
 
-# Создаём Telegram Application
 app_bot = Application.builder().token("8145266061:AAGK1SJVbSJiK3HTXMIJBm1ZLEAJlbtQKGc").build()
 
-# Обработчики
 app_bot.add_handler(CommandHandler("start", start))
 app_bot.add_handler(CommandHandler("search", search))
 app_bot.add_handler(CommandHandler("stop", stop))
 app_bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
 
-# Запуск Telegram бота в отдельном потоке
-def run_bot():
-    app_bot.run_polling()
-
-threading.Thread(target=run_bot).start()
+app_bot.run_polling()

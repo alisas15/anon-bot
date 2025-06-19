@@ -23,7 +23,7 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=partner_id, text="✅ подписчик найден!")
     else:
         users_waiting.append(user_id)
-        await update.message.reply_text("⏳ Ищем подписчика...")
+        await update.message.reply_text("⏳ ищем подписчика...")
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.chat_id

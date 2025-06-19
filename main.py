@@ -61,7 +61,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("🔍 Напиши /search чтобы начать поиск.")
 
 # Создаём Telegram Application
-app_bot = Application.builder().token("7959838571:AAFl1_RS9KUkSDWSIUhzjPFEXnalGGJR-u0").build()
+app_bot = Application.builder().token("7959838571:AAERpd9_Hjwxp7rLZ2QR_WjFxERtDMcEvqg").build()
 
 # Обработчики
 app_bot.add_handler(CommandHandler("start", start))

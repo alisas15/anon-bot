@@ -4,18 +4,20 @@ from flask import Flask
 import threading
 import os
 
-app = Flask("")
+# Flask-сервер для Render
+web_app = Flask("")
 
-@app.route("/")
+@web_app.route("/")
 def home():
     return "Bot is running!"
 
 def run_web():
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    web_app.run(host="0.0.0.0", port=port)
 
-threading.Thread(target=run_web).start()
+threading.Thread(target=run_web).start()  # запускаем Flask отдельно
 
+# Telegram бот
 users_waiting = []
 active_chats = {}
 
@@ -35,7 +37,7 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=partner_id, text="✅ Подписчик найден!")
     else:
         users_waiting.append(user_id)
-        await update.message.reply_text("⏳ ищем подписчика...")
+        await update.message.reply_text("⏳ Ищем новых подписчиков...")
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.chat_id
@@ -58,11 +60,17 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("🔍 напиши /search чтобы начать поиск.")
 
+# Создаём Telegram Application
 app_bot = Application.builder().token("7959838571:AAFl1_RS9KUkSDWSIUhzjPFEXnalGGJR-u0").build()
 
+# Обработчики
 app_bot.add_handler(CommandHandler("start", start))
 app_bot.add_handler(CommandHandler("search", search))
 app_bot.add_handler(CommandHandler("stop", stop))
 app_bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
 
-app_bot.run_polling()
+# Запуск Telegram бота в отдельном потоке
+def run_bot():
+    app_bot.run_polling()
+
+threading.Thread(target=run_bot).start()
